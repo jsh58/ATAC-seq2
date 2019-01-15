@@ -182,7 +182,7 @@ bowtie2-build  <genome.fa>  <genomeIndexName>
 
 ### Alignment
 
-Once the indexes are built, the reads can be aligned using Bowtie2.  A brief look at the [manual](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) reveals the large number of parameters and options available with Bowtie2.  Here are a few that may benefit alignment of an ATAC-seq dataset on Odyssey:
+Once the indexes are built, the reads can be aligned using Bowtie2.  A brief look at the [manual](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) reveals the large number of parameters and options available with Bowtie2.  Here are a few that may benefit the alignment of an ATAC-seq dataset on Odyssey:
 
 <table>
   <tr>
@@ -313,6 +313,8 @@ Genrich  -t <BAM>  -o <OUT>  -j  -y  -r  -e chrM  -v
 ```
 
 The alignment files for multiple replicates can be given to Genrich in a comma-separated list, e.g. `-t <BAM1>,<BAM2>`.
+
+The output file produced by Genrich is in [ENCODE narrowPeak format](https://genome.ucsc.edu/FAQ/FAQformat.html#format12), listing the genomic coordinates of each peak called and various statistics.
 
 In [this example](https://github.com/jsh58/Genrich#full-analysis-example), a single BAM containing 146.3 million alignments was analyzed by Genrich in 10.5min with 17.1GB of memory on Odyssey.  In general, input BAM(s) of more alignments take longer to analyze, but the memory usage should not increase greatly.  Note that Genrich is not multithreaded, so it runs on a single core only.
 
