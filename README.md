@@ -130,7 +130,7 @@ NGmerge is available on Odyssey:
 
 ```
 module load NGmerge
-NGmerge  -a  -1 <sample>.R1.fastq.gz  -2 <sample>.R2.fastq.gz  -o <name>
+NGmerge  -a  -1 <sample>.R1.fastq.gz  -2 <sample>.R2.fastq.gz  -o <name>  -v
 ```
 
 The output files are `<name>_1.fastq.gz` and `<name>_2.fastq.gz`.  Of the many arguments available with NGmerge, here are the most important ones for this application:
@@ -225,18 +225,18 @@ Bowtie2 also provides (via `stderr`) a summary of the mapping results, separated
   <img src="figures/figure3.png" alt="Alignment types" width="700">
   <figcaption><strong>Figure 3.  Alignment types for paired-end reads.  A:</strong> Properly paired alignments ("concordant") have the reads aligned in opposite orientations on the same reference sequence (chromosome).  The reads may overlap to some extent (bottom).  <strong>B:</strong> A read alignment (for R1) can be unpaired for several reasons: if the read's mate (R2) is unaligned (upper left), aligns to a different chromosome (upper right), aligns in the incorrect orientation (middle cases), or aligns in the correct orientation but at an invalid distance (bottom).  In all cases except the upper left, the R2 read alignment is also unpaired, and the read pair align discordantly (though Bowtie2 also requires uniqueness for such alignments to be counted as discordant).</figcaption>
 </figure>
-<br><br>
+<br>
 
 
 ## Peak-calling<a name="peak"></a>
 
-**NOTE:** Our current recommendation is to call peaks with [Genrich](https://github.com/jsh58/Genrich), which was developed in the Informatics Group.  The program has been tested extensively but is not currently published.  The previous version of these guidelines, which included peak-calling with [MACS2](https://github.com/taoliu/MACS), is available [here](https://informatics.fas.harvard.edu/atac-seq-guidelines-old.html).
+**NOTE:** Our current recommendation is to call peaks with [Genrich](https://github.com/jsh58/Genrich), which was developed in the Informatics Group.  The program has been tested extensively but is not currently published.  The previous version of these guidelines, which included multiple steps of alignment filtering and wrangling, and peak-calling with [MACS2](https://github.com/taoliu/MACS), is available [here](https://informatics.fas.harvard.edu/atac-seq-guidelines-old.html).
 
-### Another peak-caller?  Dear God, why???
+### Another peak-caller?  Why???
 
-Genrich was designed to be able to run all of the post-alignment steps through peak-calling with **one command**.  Consider the following attributes:
+[Genrich](https://github.com/jsh58/Genrich) was designed to be able to run all of the post-alignment steps through peak-calling with **one command**.  It also possesses a few novel features.  Consider the following attributes:
 
-* **Removal of mitochondrial reads**.  As stated previously, reads derived from mitochondrial DNA represent noise in ATAC-seq datasets and can substantially inflate the background level.  Genrich disregards all alignments to the mitochondrial chromosome with `-e chrM`, for example.
+* **Removal of mitochondrial reads**.  As stated previously, reads derived from mitochondrial DNA represent noise in ATAC-seq datasets and can substantially inflate the background level.  Genrich disregards all alignments to the mitochondrial chromosome with [`-e chrM`](https://github.com/jsh58/Genrich#eparam), for example.
 
 * **Removal of PCR duplicates**.  PCR duplicates are artifacts of the library preparation procedure, and they should be eliminated from consideration.  Genrich follows a [systematic procedure](https://github.com/jsh58/Genrich#pcr-duplicate-removal) to remove PCR duplicates with `-r`.  Note that this evaluation takes into account multimapping reads (see next), which is not provided by other alignment-based duplicate-removal programs, such as Picard's [MarkDuplicates](http://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates).
 
@@ -305,10 +305,11 @@ Running all post-alignment steps with a single command requires the availability
 </table>
 
 
-Here is a command to call peaks from a single BAM file:
+Here is a command to call peaks from a single BAM file on Odyssey:
 
 ```
-./Genrich  -t <BAM>  -o <OUT>  -j  -y  -r  -e chrM  -v
+module load Genrich
+Genrich  -t <BAM>  -o <OUT>  -j  -y  -r  -e chrM  -v
 ```
 
 The alignment files for multiple replicates can be given to Genrich in a comma-separated list, e.g. `-t <BAM1>,<BAM2>`.
@@ -318,7 +319,7 @@ In [this example](https://github.com/jsh58/Genrich#full-analysis-example), a sin
 Those who wish to explore the results of varying the [peak-calling parameters](https://github.com/jsh58/Genrich#peak-calling-parameters) (`-q`/`-p`, `-a`, `-l`, `-g`) should consider having Genrich produce a log file when it parses the SAM/BAM files (for example, with `-f <LOG>` added to the above command).  Then, Genrich can call peaks directly from the log file with the [`-P` option](https://github.com/jsh58/Genrich#pparam):
 
 ```
-./Genrich  -P  -f <LOG>  -o <OUT2>  -p 0.01  -a 200  -v
+Genrich  -P  -f <LOG>  -o <OUT2>  -p 0.01  -a 200  -v
 ```
 
 This uses minimal memory and much less time than running the full analysis.
@@ -332,7 +333,7 @@ Once the peaks have been identified by Genrich for a set of samples, there are s
 
 Some researchers find it useful to generate visualizations of the peaks in a genomic context.
 
-For ATAC-seq in model organisms, the peak file (`SRR5427886.narrowPeak`) can be uploaded directly to the [UCSC genome browser](https://genome.ucsc.edu/cgi-bin/hgCustom).  Note that a peak file without a header line should have the following added to the beginning of the file:
+For ATAC-seq in model organisms, the peak file produced by Genrich can be uploaded directly to the [UCSC genome browser](https://genome.ucsc.edu/cgi-bin/hgCustom).  Note that a peak file without a header line should have the following added to the beginning of the file:
 
 ```
 track type=narrowPeak
