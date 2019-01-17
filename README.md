@@ -236,17 +236,24 @@ Bowtie2 also provides (via `stderr`) a summary of the mapping results, separated
 
 [Genrich](https://github.com/jsh58/Genrich) was designed to be able to run all of the post-alignment steps through peak-calling with **one command**.  It also possesses a few novel features.  Consider the following attributes:
 
-* **Removal of mitochondrial reads**.  As stated previously, reads derived from mitochondrial DNA represent noise in ATAC-seq datasets and can substantially inflate the background level.  Genrich disregards all alignments to the mitochondrial chromosome with [`-e chrM`](https://github.com/jsh58/Genrich#eparam), for example.
-
-* **Removal of PCR duplicates**.  PCR duplicates are artifacts of the library preparation procedure, and they should be eliminated from consideration.  Genrich follows a [systematic procedure](https://github.com/jsh58/Genrich#pcr-duplicate-removal) to remove PCR duplicates with `-r`.  Note that this evaluation takes into account multimapping reads (see next), which is not provided by other alignment-based duplicate-removal programs, such as Picard's [MarkDuplicates](http://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates).
-
-* **Analysis of multimapping reads**.  It is not uncommon for short sequence reads to align equally well to multiple locations in a reference genome, especially given the repetitive nature of genomes.  Non-uniquely aligned reads can be removed by filtering based on MAPQ scores with `samtools`, but this effectively renders certain genomic regions inaccessible to the assay.  With Genrich, [reads with multiple alignments are analyzed](https://github.com/jsh58/Genrich#multimapping-reads) by adding a fractional count to each location.  Genrich's [statistical model](https://github.com/jsh58/Genrich#p-value-calculation) accommodates these values.
-+
-Along these same lines, Genrich considers the entire reference genome to be part of the assay.  If there are chromosomes or genomic regions that should be excluded from analysis, these can be specified by [`-e` or `-E`](https://github.com/jsh58/Genrich#eparam), and Genrich will adjust the [genome length calculation](https://github.com/jsh58/Genrich#genome-length-calculation) accordingly.  There is no need to [guesstimate an "effective" genome size](https://github.com/taoliu/MACS#-g--gsize) like with MACS2.
-
-* **Analysis of multiple replicates**.  When alignment files for multiple replicates are provided to Genrich, it [calls peaks for the replicates collectively](https://github.com/jsh58/Genrich#multiple-replicates).  No more IDR.  Done.
-
-* **Interpretation of alignments suitable for ATAC-seq**.  Genrich provides an [ATAC-seq analysis mode](https://github.com/jsh58/Genrich#atac-seq-mode) (`-j`) in which, rather than inferring the full fragments from the alignments, intervals are interpreted that are centered on transposase cut sites (the ends of each DNA fragment).  Only properly paired alignments are analyzed by default, but there is an option to consider unpaired alignments as well (`-y`) (Fig. 4).
+<ul>
+  <li>
+    <p><strong>Removal of mitochondrial reads</strong>.  As stated previously, reads derived from mitochondrial DNA represent noise in ATAC-seq datasets and can substantially inflate the background level.  Genrich disregards all alignments to the mitochondrial chromosome with <a href="https://github.com/jsh58/Genrich#eparam"><code>-e chrM</code></a>, for example.</p>
+  </li>
+  <li>
+    <p><strong>Removal of PCR duplicates</strong>.  PCR duplicates are artifacts of the library preparation procedure, and they should be eliminated from consideration.  Genrich follows a <a href="https://github.com/jsh58/Genrich#pcr-duplicate-removal">systematic procedure</a> to remove PCR duplicates with <code>-r</code>.  Note that this evaluation takes into account multimapping reads (see next), which is not provided by other alignment-based duplicate-removal programs, such as Picard's <a href="http://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates" rel="nofollow">MarkDuplicates</a>.</p>
+  </li>
+  <li>
+    <p><strong>Analysis of multimapping reads</strong>.  It is not uncommon for short sequence reads to align equally well to multiple locations in a reference genome, especially given the repetitive nature of genomes.  Non-uniquely aligned reads can be removed by filtering based on MAPQ scores with <code>samtools</code>, but this effectively renders certain genomic regions inaccessible to the assay.  With Genrich, <a href="https://github.com/jsh58/Genrich#multimapping-reads">reads with multiple alignments are analyzed</a> by adding a fractional count to each location.  Genrich's <a href="https://github.com/jsh58/Genrich#p-value-calculation">statistical model</a> accommodates these values.</p>
+    <p>Along these same lines, Genrich considers the entire reference genome to be part of the assay.  If there are chromosomes or genomic regions that should be excluded from analysis, these can be specified by <a href="https://github.com/jsh58/Genrich#eparam"><code>-e</code> or <code>-E</code></a>, and Genrich will adjust the <a href="https://github.com/jsh58/Genrich#genome-length-calculation">genome length calculation</a> accordingly.  There is no need to <a href="https://github.com/taoliu/MACS#-g--gsize">guesstimate an "effective" genome size</a> like with MACS2.</p>
+  </li>
+  <li>
+    <p><strong>Analysis of multiple replicates</strong>.  When alignment files for multiple replicates are provided to Genrich, it <a href="https://github.com/jsh58/Genrich#multiple-replicates">calls peaks for the replicates collectively</a>.  No more IDR.  Done.</p>
+  </li>
+  <li>
+    <p><strong>Interpretation of alignments suitable for ATAC-seq</strong>.  Genrich provides an <a href="https://github.com/jsh58/Genrich#atac-seq-mode">ATAC-seq analysis mode</a> (<code>-j</code>) in which, rather than inferring the full fragments from the alignments, intervals are interpreted that are centered on transposase cut sites (the ends of each DNA fragment).  Only properly paired alignments are analyzed by default, but there is an option to consider unpaired alignments as well (<code>-y</code>) (Fig. 4).</p>
+  </li>
+</ul>
 
 <figure>
   <img src="figures/figure4.png" alt="ATAC-seq mode" width="700">
