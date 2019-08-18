@@ -298,12 +298,12 @@ Running all post-alignment steps with a single command requires the availability
     <td>Input BED file(s) of genomic regions to exclude, such as 'N' homopolymers or high mappability regions</td>
   </tr>
   <tr>
-    <td align="center"><code>-q &lt;float&gt;</code></td>
-    <td>Maximum <i>q</i>-value (FDR-adjusted <i>p</i>-value) for peak calling (default 0.05).  An unadjusted <i>p</i>-value threshold can be used instead with <code>-p &lt;float&gt;</code>.</td>
+    <td align="center"><code>-p &lt;float&gt;</code></td>
+    <td>Maximum <i>p</i>-value for peak calling (default 0.01).  A <i>q</i>-value (FDR-adjusted <i>p</i>-value) threshold can be used instead with <code>-q &lt;float&gt;</code>.</td>
   </tr>
   <tr>
     <td nowrap align="center"><code>-a &lt;float&gt;</code></td>
-    <td>Minimum area under the curve (total significance) for a peak (default 20.0).  Increasing this value results in fewer but higher confidence peaks.</td>
+    <td>Minimum area under the curve (total significance) for a peak (default 200.0).  Increasing this value results in fewer but higher confidence peaks.</td>
   </tr>
   <tr>
     <td align="center"><code>-v</code></td>
@@ -325,10 +325,10 @@ The output file produced by Genrich is in [ENCODE narrowPeak format](https://gen
 
 In [this example](https://github.com/jsh58/Genrich#full-analysis-example), a single BAM containing 146.3 million alignments was analyzed by Genrich in 10.5min with 17.1GB of memory on Odyssey.  In general, input BAM(s) of more alignments take longer to analyze, but the memory usage should not increase greatly.  Note that Genrich is not multithreaded, so it runs on a single core only.
 
-Those who wish to explore the results of varying the [peak-calling parameters](https://github.com/jsh58/Genrich#peak-calling-parameters) (`-q`/`-p`, `-a`, `-l`, `-g`) should consider having Genrich produce a log file when it parses the SAM/BAM files (for example, with `-f <LOG>` added to the above command).  Then, Genrich can call peaks directly from the log file with the [`-P` option](https://github.com/jsh58/Genrich#pparam):
+Those who wish to explore the results of varying the [peak-calling parameters](https://github.com/jsh58/Genrich#peak-calling-parameters) (`-p`/`-q`, `-a`, `-l`, `-g`) should consider having Genrich produce a log file when it parses the SAM/BAM files (for example, with `-f <LOG>` added to the above command).  Then, Genrich can call peaks directly from the log file with the [`-P` option](https://github.com/jsh58/Genrich#pparam):
 
 ```
-Genrich  -P  -f <LOG>  -o <OUT2>  -p 0.01  -a 200  -v
+Genrich  -P  -f <LOG>  -o <OUT2>  -p 0.001  -a 100  -v
 ```
 
 This uses minimal memory and much less time than running the full analysis.
